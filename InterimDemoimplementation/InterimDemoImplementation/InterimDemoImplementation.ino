@@ -2,8 +2,8 @@
 #include <WiFi.h>
 #include "mqtt_handler.h"
 
-const char* ssid = "jiam";
-const char* password = "Aneexieguc123";
+const char* ssid = "Zion iPhone";
+const char* password = "Just123abc";
 
 void setup() {
     M5.begin();

@@ -2,7 +2,7 @@
 #include "cube_handler.h"
 #include "vibrationsensor_handler.h"
 
-const char* mqtt_server = "192.168.50.125";
+const char* mqtt_server = "172.20.10.1";
 const char* mqtt_cube_topic = "m5stick/cube";
 const char* mqtt_vibrationsensor_topic = "m5stick/command";
 const char* client_id = "m5stick";
