@@ -10,7 +10,7 @@ void setup() {
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
-        M5.Lcd.print(".");
+        M5.Lcd.print("X");
     }
 
     // LED pin SETUP and reset

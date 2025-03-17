@@ -2,7 +2,8 @@
 #include "cube_handler.h"
 #include "vibrationsensor_handler.h"
 
-const char* mqtt_server = "172.20.10.1";
+// Check for HomeAssistant Network if Using Hotspot IP Address
+const char* mqtt_server = "172.20.10.14";
 const char* mqtt_cube_topic = "m5stick/cube";
 const char* mqtt_vibrationsensor_topic = "m5stick/command";
 const char* client_id = "m5stick";
@@ -32,6 +33,7 @@ void reconnectMQTT() {
             client.subscribe(mqtt_vibrationsensor_topic);
         } else {
             Serial.println("MQTT Connection Failed. Retrying...");
+            M5.Lcd.print("MQTT Connection Failed");
             delay(5000);
         }
     }
