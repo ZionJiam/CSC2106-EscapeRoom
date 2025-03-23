@@ -4,14 +4,16 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <M5StickCPlus.h>
+#include "theme_type.h" // Use shared enum definition
 
 
-extern PubSubClient client;  // Externally accessible MQTT client
+extern PubSubClient client;
 
-void setupMQTT();
+void setupMQTT(EscapeRoomTheme theme);
 void loopMQTT();
+void reconnectMQTT(EscapeRoomTheme theme);
 void loopButtonListener();
-void reconnectMQTT();
 void mqttCallback(char* topic, byte* payload, unsigned int length);
 
 #endif
+

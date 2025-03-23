@@ -1,11 +1,12 @@
 #include "mqtt_handler.h"
-#include "cube_handler.h"
-#include "vibrationsensor_handler.h"
+#include "zombie_handler.h"
+#include "theme_handler.h"
+#include "theme_type.h"
+
+
 
 // Check for HomeAssistant Network if Using Hotspot IP Address
 const char* mqtt_server = "172.20.10.14";
-const char* mqtt_cube_topic = "m5stick/cube";
-const char* mqtt_vibrationsensor_topic = "m5stick/command";
 const char* client_id = "m5stick";
 const char* mqtt_user = "zionjiam";
 const char* mqtt_password = "98323646";
@@ -13,52 +14,90 @@ const char* mqtt_password = "98323646";
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-void setupMQTT() {
+EscapeRoomTheme currentThemeGlobal = THEME_NONE;
+
+void setupMQTT(EscapeRoomTheme theme) {
     client.setServer(mqtt_server, 1883);
     client.setCallback(mqttCallback);
-    reconnectMQTT();
+    currentThemeGlobal = theme;
+    reconnectMQTT(currentThemeGlobal);
 }
 
 void loopMQTT() {
     if (!client.connected()) {
-        reconnectMQTT();
+      reconnectMQTT(currentThemeGlobal);
     }
     client.loop();
 }
 
-void reconnectMQTT() {
-    while (!client.connected()) {
-        if (client.connect(client_id, mqtt_user, mqtt_password)) {
-            client.subscribe(mqtt_cube_topic);
-            client.subscribe(mqtt_vibrationsensor_topic);
-        } else {
-            Serial.println("MQTT Connection Failed. Retrying...");
-            M5.Lcd.print("MQTT Connection Failed");
-            delay(5000);
-        }
+void reconnectMQTT(EscapeRoomTheme theme) {
+  while (!client.connected()) {
+    if (client.connect("m5stick", mqtt_user, mqtt_password)) {
+      Serial.println("Connected to MQTT Broker!");
+
+      switch (theme) {
+        case THEME_ZOMBIE:
+          client.subscribe("m5stick/zombie/cube");
+          client.subscribe("m5stick/zombie/shake");
+          client.subscribe("m5stick/zombie/endscreen");
+          break;
+
+        case THEME_HAUNTED:
+          client.subscribe("m5stick/haunted/tap");
+          break;
+
+        case THEME_PRISON:
+          client.subscribe("m5stick/prison/rotate");
+          client.subscribe("m5stick/prison/slide");
+          break;
+      }
+    } else {
+      Serial.println("MQTT connection failed, retrying...");
+      delay(5000);
     }
+  }
 }
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
-    String message;
-    for (int i = 0; i < length; i++) {
-        message += (char)payload[i];
-    }
+  String message;
+  for (int i = 0; i < length; i++) message += (char)payload[i];
+  String topicStr = String(topic);
 
-    if (String(topic) == mqtt_cube_topic) {
-        handleCubeInput(message);
-    } else if (String(topic) == mqtt_vibrationsensor_topic) {
-        handleVibrationSensor(message);
-    }
+  switch (currentThemeGlobal) {
+    case THEME_ZOMBIE:
+      handleZombieMQTT(topicStr, message);
+      break;
+    case THEME_HAUNTED:
+      handleZombieMQTT(topicStr, message);
+      //handleHauntedMQTT(topicStr, message);
+      break;
+    case THEME_PRISON:
+      handleZombieMQTT(topicStr, message);
+      //handlePrisonMQTT(topicStr, message);
+      break;
+  }
 }
 
-
 void loopButtonListener(){
-   M5.update(); // Update button states
 
-    // **Button A Press - Reset Sequence**
-    if (M5.BtnA.wasPressed()) {
-        Serial.println("Button A pressed: Resetting sequence.");
-        resetSequence();
-    }
+  //  if (M5.BtnA.wasPressed()) {
+  //   currentTheme = (EscapeRoomTheme)((currentTheme + 1) % 3); // Cycle between 0,1,2
+  //   M5.Lcd.fillScreen(BLACK);
+  //   M5.Lcd.setCursor(0, 10);
+  //   M5.Lcd.printf("Switched Theme: %d", currentTheme);
+
+  //   // Force re-subscribe to new topics
+  //   client.disconnect(); // Trigger reconnectMQTT()
+  // }
+    switch (currentThemeGlobal) {
+        case THEME_ZOMBIE:
+          loopZombieButtonListener();
+          break;
+
+        case THEME_HAUNTED:
+          break;
+
+        case THEME_PRISON:
+          break;
+      }
 }

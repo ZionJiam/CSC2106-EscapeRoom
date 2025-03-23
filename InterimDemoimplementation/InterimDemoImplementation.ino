@@ -1,26 +1,39 @@
 #include <M5StickCPlus.h>
 #include <WiFi.h>
 #include "mqtt_handler.h"
+#include "theme_handler.h"
 
 const char* ssid = "Zion iPhone";
 const char* password = "Just123abc";
 
 void setup() {
-    M5.begin();
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        M5.Lcd.print("X");
-    }
+  M5.begin();
+  M5.Lcd.setTextSize(2);
+  M5.Lcd.setRotation(3);
+  M5.Lcd.setCursor(30, 10);
+  M5.Lcd.println("Connecting...");
 
-    // LED pin SETUP and reset
-    pinMode(10, OUTPUT);
-    digitalWrite(10, HIGH);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    M5.Lcd.print(".");
+  }
 
-    setupMQTT();  // Initialize MQTT
+  // LED pin setup
+  pinMode(10, OUTPUT);
+  digitalWrite(10, HIGH);
+
+  displayThemeSelection();  // Show theme list first
 }
 
 void loop() {
+  M5.update();
+
+  if (!themeLocked) {
+    handleThemeSelection();  // Button B to scroll, A to confirm
+  } else {
     loopButtonListener();
-    loopMQTT();   // Handle MQTT events
+    handleThemeReset();      // Hold A to reset theme
+    loopMQTT();              // Maintain MQTT connection and loop
+  }
 }
