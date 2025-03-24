@@ -106,6 +106,7 @@ void checkPuzzle() {
         M5.Lcd.setCursor(0, 10);
         M5.Lcd.println("ACCESS DENIED!");
         delay(2000);
+        enteredSequence = "";
         displayZombieStage();
     }
 
