@@ -41,7 +41,9 @@ void handleThemeSelection() {
       currentTheme = (EscapeRoomTheme)selectedIndex;
       themeLocked = true;
       M5.Lcd.fillScreen(BLACK);
-      M5.Lcd.setCursor(0, 10);
+      M5.Lcd.setTextSize(2);
+      M5.Lcd.setRotation(3);
+      M5.Lcd.setCursor(30, 10);
       M5.Lcd.printf("Selected: %s\n", themeNames[selectedIndex].c_str());
       setupMQTT(currentTheme);
       delay(1000);
@@ -71,7 +73,9 @@ void handleThemeReset() {
       currentTheme = THEME_NONE;
       selectedIndex = 0;
       M5.Lcd.fillScreen(ORANGE);
-      M5.Lcd.setCursor(0, 10);
+      M5.Lcd.setTextSize(2);
+      M5.Lcd.setRotation(3);
+      M5.Lcd.setCursor(30, 10);
       M5.Lcd.println("Theme Reset!");
       delay(1500);
       displayThemeSelection();

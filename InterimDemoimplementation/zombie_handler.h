@@ -21,6 +21,8 @@ void checkPuzzle();
 // For the Vibration Sensor
 void handleVibrationSensor();
 
+void resetValuesAfterCompletion();
+
 void showPowerActivationDisplay();
 void showLoginSuccessDisplay();
 void showEndScreen();

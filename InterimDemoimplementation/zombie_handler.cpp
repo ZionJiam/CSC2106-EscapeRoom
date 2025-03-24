@@ -10,6 +10,7 @@ bool isLogin = false;
 
 void handleZombieMQTT(String topic, String message) {
   if (message == "SHOW") {
+    resetValuesAfterCompletion();
     showEndScreen();  // 🎬 trigger immersive final screen
   }
 
@@ -53,7 +54,6 @@ void activatePowerSystem() {
 void loginCommunicationSystem(String message){
     handleCubeInput(message);
     if(isLogin == true){
-        displayZombieStage();
         client.publish("m5stick/zombie/stage/communication", "completed");
         client.publish("m5stick/zombie/stage/all", "completed");
     }
@@ -71,13 +71,6 @@ void handleCubeInput(String message) {
     }
 }
 
-void resetSequence(){
-        enteredSequence = "";
-        M5.Lcd.fillScreen(BLACK);
-        M5.Lcd.setCursor(0, 10);
-        M5.Lcd.println("Password Reset");
-        delay(500);
-}
 
 void deleteLastPasswordChar() {
     if (enteredSequence.length() > 0) {
@@ -112,11 +105,12 @@ void checkPuzzle() {
         M5.Lcd.fillScreen(RED);
         M5.Lcd.setCursor(0, 10);
         M5.Lcd.println("ACCESS DENIED!");
+        delay(2000);
+        displayZombieStage();
     }
 
     // Update when game logic implements
     delay(3000);
-    resetSequence();
 }
 
 
@@ -126,6 +120,13 @@ void handleVibrationSensor() {
     M5.Lcd.println("System Powered Up!");
     showPowerActivationDisplay();
     powerActivated = true;
+}
+
+void resetValuesAfterCompletion(){
+  powerActivated = false;
+  isLogin = false;
+  enteredSequence = "";
+  currentZombieStage = STAGE_POWER;
 }
 
 void showPowerActivationDisplay() {

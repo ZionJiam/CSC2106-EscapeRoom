@@ -11,13 +11,14 @@ const char* client_id = "m5stick";
 const char* mqtt_user = "zionjiam";
 const char* mqtt_password = "98323646";
 
-WiFiClient espClient;
+WiFiClientSecure espClient;
 PubSubClient client(espClient);
 
 EscapeRoomTheme currentThemeGlobal = THEME_NONE;
 
 void setupMQTT(EscapeRoomTheme theme) {
-    client.setServer(mqtt_server, 1883);
+    espClient.setInsecure();  // For self-signed or unverified certs
+    client.setServer(mqtt_server, 8883);
     client.setCallback(mqttCallback);
     currentThemeGlobal = theme;
     reconnectMQTT(currentThemeGlobal);
@@ -52,6 +53,9 @@ void reconnectMQTT(EscapeRoomTheme theme) {
           break;
       }
     } else {
+      M5.Lcd.fillScreen(BLACK);
+      M5.Lcd.setCursor(0, 10);
+      M5.Lcd.printf("MQTT connect failed, state= %d", client.state());
       Serial.println("MQTT connection failed, retrying...");
       delay(5000);
     }

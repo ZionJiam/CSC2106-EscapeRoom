@@ -2,6 +2,7 @@
 #define MQTT_HANDLER_H
 
 #include <WiFi.h>
+#include <WiFiClientSecure.h> // Make sure this is included!
 #include <PubSubClient.h>
 #include <M5StickCPlus.h>
 #include "theme_type.h" // Use shared enum definition
