@@ -6,7 +6,7 @@
 
 
 // Check for HomeAssistant Network if Using Hotspot IP Address
-const char* mqtt_server = "172.20.10.14";
+const char* mqtt_server = "192.168.1.115";
 const char* client_id = "m5stick";
 const char* mqtt_user = "zionjiam";
 const char* mqtt_password = "98323646";

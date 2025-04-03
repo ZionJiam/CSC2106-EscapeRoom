@@ -1,13 +1,20 @@
 #include "zombie_handler.h"
 #include "mqtt_handler.h"  // if client is declared there
 #include <M5StickCPlus.h>
+#include "BLETracker.h"
 
 String enteredSequence = "";
 const String correctSequence = "1234";
 
+// For RSSI
+BLETracker tracker;
+
 bool powerActivated = false;
+bool isHacked = false;
 bool isLogin = false;
 
+
+// Handle any zombie topic messages received 
 void handleZombieMQTT(String topic, String message) {
   if (message == "SHOW") {
     resetValuesAfterCompletion();
@@ -23,6 +30,7 @@ void handleZombieMQTT(String topic, String message) {
   }
 }
 
+// Display the current Zombie Stage
 void displayZombieStage() {
   M5.Lcd.fillScreen(BLACK);
   M5.Lcd.setCursor(0, 10);
@@ -31,7 +39,9 @@ void displayZombieStage() {
       M5.Lcd.println("Task: Activate Power System");
       break;
     case STAGE_COMMUNICATION:
-      M5.Lcd.println("Task: Login to Comm System");
+      M5.Lcd.println("Task: Hack the Security System");
+      tracker.begin();  // Initialize BLE and Display once
+
       break;
     case STAGE_COMPLETE:
       M5.Lcd.println("Mission Complete!");
@@ -44,11 +54,14 @@ void displayZombieStage() {
 
 void activatePowerSystem() {
   handleVibrationSensor();
-  currentZombieStage = STAGE_COMMUNICATION;
+  currentZombieStage = STAGE_SECURITY;
   if(powerActivated == true){
     displayZombieStage();
   }
   client.publish("m5stick/zombie/stage/power", "completed");
+}
+
+void hackSecuritySystem(){
 }
 
 void loginCommunicationSystem(String message){
@@ -88,6 +101,18 @@ void deleteLastPasswordChar() {
 
 void loopZombieButtonListener() {
 
+    if(currentZombieStage == STAGE_SECURITY){
+        tracker.scanForRooms();  // Continuously scan for BLE devices
+        // Display and Serial updates
+        Serial.printf("Current Room: %s | RSSI: %d\n", tracker.getCurrentRoom().c_str(), tracker.getCurrentRSSI());
+
+        M5.Lcd.fillScreen(BLACK);
+        M5.Lcd.setCursor(0, 0, 2);
+        M5.Lcd.printf("Now in:\n%s\nRSSI: %d", tracker.getCurrentRoom().c_str(), tracker.getCurrentRSSI());
+
+        delay(SCAN_DELAY);  // Wait before next scan
+    }
+
     if (currentZombieStage == STAGE_COMMUNICATION && M5.BtnB.wasPressed()) {
       M5.Lcd.fillScreen(GREEN);
         deleteLastPasswordChar();
@@ -125,6 +150,7 @@ void handleVibrationSensor() {
 
 void resetValuesAfterCompletion(){
   powerActivated = false;
+  isHacked = false;
   isLogin = false;
   enteredSequence = "";
   currentZombieStage = STAGE_POWER;

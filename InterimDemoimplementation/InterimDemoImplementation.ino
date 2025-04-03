@@ -3,8 +3,10 @@
 #include "mqtt_handler.h"
 #include "theme_handler.h"
 
-const char* ssid = "Zion iPhone";
-const char* password = "Just123abc";
+
+const char* ssid = "Linksys12197";
+const char* password = "e3sneffpkf";
+
 
 void setup() {
   M5.begin();
