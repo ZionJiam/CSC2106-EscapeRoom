@@ -8,6 +8,7 @@
 void handleZombieMQTT(String topic, String message);
 
 void displayZombieStage();
+void initZombieStage();
 void activatePowerSystem();
 void loginCommunicationSystem(String message);
 void loopZombieButtonListener();
@@ -22,6 +23,13 @@ void checkPuzzle();
 void handleVibrationSensor();
 
 void resetValuesAfterCompletion();
+
+void extractUserAreaFromJSON(String message);
+void testUserArea(String message);
+
+void showHackingSuccessDisplay();
+void showHackingFailureDisplay();
+void showHackingInProgressDisplay();
 
 void showPowerActivationDisplay();
 void showLoginSuccessDisplay();

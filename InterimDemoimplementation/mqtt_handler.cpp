@@ -7,12 +7,16 @@
 
 // Check for HomeAssistant Network if Using Hotspot IP Address
 const char* mqtt_server = "192.168.1.115";
-const char* client_id = "m5stick";
 const char* mqtt_user = "zionjiam";
-const char* mqtt_password = "98323646";
+const char* mqtt_password = "98323646abc";
 
 WiFiClientSecure espClient;
 PubSubClient client(espClient);
+
+//const char* client_id = "m5stickPlayer1";
+
+const char* client_id = "m5stickPlayer2";
+
 
 EscapeRoomTheme currentThemeGlobal = THEME_NONE;
 
@@ -33,7 +37,7 @@ void loopMQTT() {
 
 void reconnectMQTT(EscapeRoomTheme theme) {
   while (!client.connected()) {
-    if (client.connect("m5stick", mqtt_user, mqtt_password)) {
+    if (client.connect(client_id, mqtt_user, mqtt_password)) {
       Serial.println("Connected to MQTT Broker!");
 
       switch (theme) {
@@ -41,6 +45,12 @@ void reconnectMQTT(EscapeRoomTheme theme) {
           client.subscribe("m5stick/zombie/cube");
           client.subscribe("m5stick/zombie/shake");
           client.subscribe("m5stick/zombie/endscreen");
+
+          // Change depending on player
+          client.subscribe("m5stick/player2position");
+          client.subscribe("m5stick/player1position");
+          client.subscribe("m5stick/zombie/hack_result");
+          
           break;
 
         case THEME_HAUNTED:
